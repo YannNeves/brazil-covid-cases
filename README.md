@@ -39,5 +39,5 @@ $ npm start
 - [Axios](https://github.com/axios/axios)
 
 ## Créditos:
-Aplicação construída com utilização da [API](https://covid19-brazil-api.now.sh).
+Aplicação construída com utilização da [API](https://covid19-brazil-api.now.sh) de casos do Covid no Brasil.
 
