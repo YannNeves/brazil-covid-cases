@@ -6,6 +6,7 @@ import api from '../../services/api';
 import ICities from '../../interfaces/Cities';
 
 import { Title, Subtitle, Form, Countries, Error } from './styles';
+import { exit } from 'process';
 
 const Dashboard: React.FC = () => {
   const [states, setStates] = useState<ICities[]>([]);
@@ -18,16 +19,20 @@ const Dashboard: React.FC = () => {
   ): Promise<void> {
     e.preventDefault();
 
-    try {
-      const response = await api.get<ICities[]>(`/brazil/uf/${search}`);
-      const ctr = response.data;
-      setStates(ctr);
-      setSearch('');
-    } catch (err) {
+    const response = await api.get(`/brazil/uf/${search.length === 2 ? search : converterEstados(search)}`);
+    
+    if('error' in response.data){
       setTip(
         'Não foi possível realizar a pesquisa com os dados informados, tente novamente',
       );
+      setSearch('');
+      return;
     }
+
+    let ctr = [];
+    ctr.push(response.data);
+    setStates(ctr);
+    setSearch('');
   }
 
   useEffect(() => {
@@ -61,7 +66,7 @@ const Dashboard: React.FC = () => {
               value={search}
               onChange={e => setSearch(e.target.value)}
               type="text"
-              placeholder="Procure por nomes (incluindo nomes secundários)"
+              placeholder="Procure por um estado específico (Nome Completo ou Sigla)"
             />
             <button type="submit">
               <FiSearch />
@@ -87,6 +92,43 @@ const Dashboard: React.FC = () => {
     </>
   );
 };
+
+function converterEstados(val:String) {
+    var data;
+    val = val.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
+
+    switch (val) {
+      case "ACRE" :					data = "AC";	break;
+      case "ALAGOAS" :				data = "AL";	break;
+      case "AMAZONAS" :				data = "AM";	break;
+      case "AMAPA" :					data = "AP";	break;
+      case "BAHIA" :					data = "BA";	break;
+      case "CEARA" :					data = "CE";	break;
+      case "DISTRITO FEDERAL" :		data = "DF";	break;
+      case "ESPIRITO SANTO" :			data = "ES";	break;
+      case "GOIAS" :					data = "GO";	break;
+      case "MARANHAO" :				data = "MA";	break;
+      case "MINAS GERAIS" :			data = "MG";	break;
+      case "MATO GROSSO DO SUL" :		data = "MS";	break;
+      case "MATO GROSSO" :			data = "MT";	break;
+      case "PARA" :					data = "PA";	break;
+      case "PARAABA" :				data = "PB";	break;
+      case "PERNAMBUCO" :				data = "PE";	break;
+      case "PIAUI" :					data = "PI";	break;
+      case "PARANA" :					data = "PR";	break;
+      case "RIO DE JANEIRO" :			data = "RJ";	break;
+      case "RIO GRANDE DO NORTE" :	data = "RN";	break;
+      case "RONDONIA" : 				data = "RO";	break;
+      case "RORAIMA" :				data = "RR";	break;
+      case "RIO GRANDE DO SUL" :		data = "RS";	break;
+      case "SANTA CATARINA" :			data = "SC";	break;
+      case "SERGIPE" :				data = "SE";	break;
+      case "SAO PAULO" :				data = "SP";	break;
+      case "TOCANTINS" :				data = "TO";	break;
+    }
+
+    return data;
+}
 
 export default Dashboard;
 
